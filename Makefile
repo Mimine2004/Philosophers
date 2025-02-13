@@ -86,7 +86,7 @@ $(BONUS): $(SRCS_BONUS) philo_bonus/philo_bonus.h $(OBJ_BONUS)
 	echo "    / /^^^\\ /.-'     |   |\\  |     but usually i'm just pooping"
 	echo "   ( /  _/u     |    \\___|_)_|_          "
 	echo "    \\|  \\\\      /    / \\_(______)         "
-	echo "     |   \\\\    /    /  |  |    |         "
+	echo "     |   \\\\    /    /  |  |    |        "
 	echo "     |    ) _/    /   |  |    |         "
 	echo "     _\\__/       /___(   |    |         "
 	echo "  _/  __________/     \\  |    |         "
