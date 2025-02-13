@@ -21,9 +21,9 @@
 
 typedef struct s_philo
 {
-	int				eat;
-	int				sleep;
-	int				die;
+	long long		eat;
+	long long		sleep;
+	long long		die;
 	int				nbr_philo;
 	int				nbr_eat;
 	int				is_thinking;
@@ -38,14 +38,14 @@ typedef struct s_philo
 //philo.c
 void	data_init(t_philo *data, char **av, int var);
 void	ft_printf(t_philo *data, int i);
-int	diff_time(struct timeval	start, t_philo *data);
+int	diff_time(struct timeval reference, t_philo *data);
 void	*philosophers(void *arg);
-int	number_of_meal(int nbr_eat, int read_only, t_philo *data);
+int	number_of_meal(int nbr_eat, int read_only, t_philo *data, int var);
 int	is_dead(int i, int read_only, t_philo *data);
 void	*big_bro_is_watching(void *arg);
 //philo_utils.c
 int	ft_isnum(char *str);
-int	ft_atoi(char *str);
+long long	ft_atol(char *str);
 //philo_utils2.c
 
 #endif 

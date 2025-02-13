@@ -12,10 +12,10 @@
 
 #include "philo.h"
 
-int	ft_atoi(char *str)//ok
+long long	ft_atol(char *str)//ok
 {
-	int	i;
-	int	res;
+	int         i;
+	long long	res;
 
 	i = 0;
 	res = 0;
