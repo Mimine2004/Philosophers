@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/12 14:31:08 by marvin           ###   ########.fr       */
+/*   Updated: 2025/02/13 07:54:11 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,9 @@ int main(int ac, char **av)
         data_init(data, av, 1);
     else
         data_init(data, av, 0);
+	data->philo = malloc(sizeof(pthread_t) * data->nbr_philo);
+	while (i < ac)
+	{
+		pthread_create(philo,NULL,philosophers,data)
+	}
 }
