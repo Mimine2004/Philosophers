@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 12:23:43 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/14 11:43:53 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:40:36 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ typedef struct s_philo
 	int				is_thinking;
 	int				x;
 	pthread_mutex_t	*forks;
+	int				*fork_state;
+	pthread_mutex_t	*table_lock;
 	pthread_mutex_t	print;
 	pthread_mutex_t	death;
 	pthread_mutex_t	meal;

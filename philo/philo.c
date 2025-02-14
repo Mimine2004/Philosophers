@@ -6,11 +6,36 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/14 11:47:35 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:47:18 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	forks_lock(t_philo *data, int fork, int state)
+{
+	pthread_mutex_lock(&data->forks[fork]); // Lock the fork's mutex
+
+	if (state == 1) // Trying to take the fork
+	{
+		if (data->fork_state[fork] == 1) // If fork is available
+		{
+			data->fork_state[fork] = 0; // Mark fork as taken
+			pthread_mutex_unlock(&data->forks[fork]);
+			return (1);
+		}
+	}
+
+	else if (state == 0) // Trying to put the fork back
+	{
+		data->fork_state[fork] = 1; // Mark fork as available
+	}
+
+	pthread_mutex_unlock(&data->forks[fork]); // Unlock the fork's mutex
+	return (0);
+}
+
+
 
 void	*philosophers(void *arg)
 {
@@ -40,17 +65,13 @@ void	*philosophers(void *arg)
 	}
 	while (1)
 	{
-		if (pthread_mutex_lock(&data->forks[data->x]) != 0)
-		{
-			if (diff_time(start, data) == 0)
-				return (NULL);
-		}
+		while (!forks_lock(data, data->x, 1))
+			usleep(500);
 		ft_printf(data, 1);
-		if (pthread_mutex_lock(&data->forks[second_fork]) != 0)
+		while (!forks_lock(data, second_fork, 1))
 		{
-			pthread_mutex_unlock(&data->forks[data->x]);
-			if (diff_time(start, data) == 0)
-				return (NULL);
+			forks_lock(data, data->x, 0);
+			usleep(500);
 		}
 		ft_printf(data, 6);
 		gettimeofday(&start, NULL);
@@ -64,8 +85,8 @@ void	*philosophers(void *arg)
 			tmp_eat -= 500;
 		}
 		number_of_meal(1, 0, data, 0);
-		pthread_mutex_unlock(&data->forks[data->x]);
-		pthread_mutex_unlock(&data->forks[second_fork]);
+		forks_lock(data, data->x, 0);
+		forks_lock(data, second_fork, 0);
 		ft_printf(data, 2);
 		tmp_sleep = data->sleep;
 		while (tmp_sleep > 0)

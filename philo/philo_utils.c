@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:05 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/14 11:44:49 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:40:25 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,14 @@ void	data_init(t_philo *data, char **av, int var)
 	if (data->nbr_philo <= 0)
 		exit(1);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_philo);
-	if (!data->forks)
+	data->fork_state = malloc(sizeof(int) * data->nbr_philo);
+	if (!data->forks || !data->fork_state)
 		exit(1);
 	while (i < data->nbr_philo)
 	{
 		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
 			exit(1);
+		data->fork_state[i] = 1;
 		i++;
 	}
 }
