@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: marvin <marvin@student.42.fr>              +#+  +:+       +#+         #
+#    By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/12 11:23:20 by marvin            #+#    #+#              #
-#    Updated: 2025/02/12 11:23:20 by marvin           ###   ########.fr        #
+#    Updated: 2025/02/14 11:35:43 by hhecquet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,8 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g
 
 SRCS =	philo/philo.c  \
-		philo/philo_utils.c
+		philo/philo_utils.c \
+		philo/philo_utils2.c
 
 SRCS_BONUS =	philo_bonus/philo_bonus.c  \
 				philo_bonus/philo_utils_bonus.c
