@@ -27,32 +27,20 @@ M = \033[35m#Magenta
 RE = \033[0m#Reset
 BO = \033[1m#Bold
 
-NAME = philosophers
+NAME = philo
 
-BONUS = philosophers_bonus
+BONUS = philo_bonus
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g
-
-SRCS =	philo/philo.c  \
-		philo/philo_utils.c \
-		philo/philo_utils2.c
-
-SRCS_BONUS =	philo_bonus/philo_bonus.c  \
-				philo_bonus/philo_utils_bonus.c
-
-OBJ = $(SRCS:.c=.o)
-
-OBJ_BONUS = $(SRCS_BONUS:.c=.o)
+.PHONY: all bonus clean fclean re FORCE
 
 all: $(NAME)
 
 bonus: $(BONUS)
 
-$(NAME): $(SRCS) philo/philo.h $(OBJ)
+$(NAME): FORCE
 	echo "Compiling Philosophers..."
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
-	echo "$(NAME) built successfully! 🤓👆"
+	cd philo && make -s all
+	echo "$(BO)$(NAME) built successfully! 🤓👆"
 	echo "$(M)       _____"
 	echo "      /      \\"
 	echo "     (____/\\  )"
@@ -75,10 +63,10 @@ $(NAME): $(SRCS) philo/philo.h $(OBJ)
 	echo "  _/  / / Uuuuu    \\                    "
 	echo " \`----'(____________)                   $(RE)"                                    
 
-$(BONUS): $(SRCS_BONUS) philo_bonus/philo_bonus.h $(OBJ_BONUS)
+$(BONUS):
 	echo "Compiling Philosopher's bonus..."
-	$(CC) $(CFLAGS) $(OBJ_BONUS) -o $(BONUS)
-	echo "$(BONUS) built successfully! 🤓👆"
+	cd philo_bonus && make -s all
+	echo "$(BO)$(BONUS) built successfully! 🤓👆"
 	echo "$(M)       _____"
 	echo "      /      \\"
 	echo "     (____/\\  )"
@@ -103,16 +91,17 @@ $(BONUS): $(SRCS_BONUS) philo_bonus/philo_bonus.h $(OBJ_BONUS)
 
 clean:
 	echo "Cleaning philosophers object files..."
-	cd philo && rm -f *.o
-	cd ..
-	cd philo_bonus && rm -f *.o
-	cd ..
+	cd philo && make clean -s
+	
+	cd philo_bonus && make clean -s
 	rm -f *.o
 	echo "Philosophers object files have been cleaned 👌"
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f $(BONUS)
+	cd philo && make fclean -s
+	
+	cd philo_bonus && make fclean -s
+	
 	echo "Philosophers itself has been cleaned 🌟"
 
 re: fclean all

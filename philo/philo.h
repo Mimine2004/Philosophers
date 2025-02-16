@@ -26,8 +26,8 @@ typedef struct s_philo
 	long long		die;
 	int				nbr_philo;
 	int				nbr_eat;
-	int				is_thinking;
 	int				x;
+	pthread_t		*philo;
 	pthread_mutex_t	*forks;
 	int				*fork_state;
 	pthread_mutex_t	*table_lock;
@@ -38,13 +38,13 @@ typedef struct s_philo
 
 //philo.c
 void		*philosophers(void *arg);
-int			number_of_meal(int nbr_eat, int read_only, t_philo *data, int var);
+int			number_of_meal(int id, int read_only, t_philo *data, int var);
 int			is_dead(int i, int read_only, t_philo *data);
 void		*big_bro_is_watching(void *arg);
 //philo_utils.c
-void		ft_printf(t_philo *data, int i);
-void		data_init(t_philo *data, char **av, int var);
-int			diff_time(struct timeval start, t_philo *data);
+void		ft_printf(t_philo *data, int i, int id);
+int			data_init(t_philo *data, char **av, int var);
+int			diff_time(struct timeval start, t_philo *data, int id);
 //philo_utils2.c
 long long	ft_atol(char *str);
 int			ft_isnum(char *str);

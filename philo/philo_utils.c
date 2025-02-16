@@ -12,30 +12,43 @@
 
 #include "philo.h"
 
-void	ft_printf(t_philo *data, int i)
+long long	get_time(void)
 {
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+}
+
+void	ft_printf(t_philo *data, int i, int id)
+{
+	static int	state = 0;
+
+	if (is_dead(0, 1, data) != 0)
+		state = 1;
+	if (state == 1 && id > -1 && i != 4)
+		return ;
 	pthread_mutex_lock(&data->print);
 	if (i == 1)
-		printf("%d has taken a fork 🍴\n", data->x + 1);
+		printf("%lld \033[34;01m%d\033[00m has taken a fork 🍴\n", get_time(), id);
 	else if (i == 2)
-		printf("%d is sleeping 😴\n", data->x + 1);
+		printf("%lld \033[34;01m%d\033[00m is sleeping 😴\n", get_time(), id);
 	else if (i == 3)
-	{
-		printf("%d is thinking 🤔\n", data->x + 1);
-		data->is_thinking = 1;
-	}
+		printf("%lld \033[34;01m%d\033[00m is thinking 🤔\n", get_time(), id);
 	else if (i == 4)
-		printf("%d died 💀\n", is_dead(0, 1, data));
+		printf("%lld \033[34;01m%d\033[00m died 💀\n", get_time(), is_dead(0, 1, data));
 	else if (i == 5)
-		printf("Everyone has eaten enough 🍽️\n");
+		printf("%lld \033[34;01mEveryone\033[00m has eaten enough 🍽️\n", get_time());
 	else if (i == 6)
-		printf("%d has taken another fork 🍴\n", data->x + 1);
+		printf("%lld \033[34;01m%d\033[00m has taken another fork 🍴\n", get_time(), id);
 	else if (i == 7)
-		printf("%d is eating 🍝\n", data->x + 1);
+		printf("%lld \033[34;01m%d\033[00m is eating 🍝\n", get_time(), id);
+	else if (i == 8)
+		printf("%lld \033[34;01m%d\033[00m has finished eating 🍽️\n", get_time(), id);
 	pthread_mutex_unlock(&data->print);
 }
 
-void	data_init(t_philo *data, char **av, int var)
+int	data_init(t_philo *data, char **av, int var)
 {
 	int	i;
 
@@ -47,26 +60,23 @@ void	data_init(t_philo *data, char **av, int var)
 	data->nbr_eat = -1;
 	if (var)
 		data->nbr_eat = ft_atol(av[5]);
-	data->is_thinking = 0;
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->death, NULL);
 	pthread_mutex_init(&data->meal, NULL);
 	if (data->nbr_philo <= 0)
-		exit(1);
+		return (0);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_philo);
-	data->fork_state = malloc(sizeof(int) * data->nbr_philo);
-	if (!data->forks || !data->fork_state)
-		exit(1);
+	if (!data->forks)
+		return (0);
 	while (i < data->nbr_philo)
 	{
-		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
-			exit(1);
-		data->fork_state[i] = 1;
+		pthread_mutex_init(&data->forks[i], NULL);
 		i++;
 	}
+	return (1);
 }
 
-int	diff_time(struct timeval start, t_philo *data)
+int	diff_time(struct timeval start, t_philo *data, int id)
 {
 	long			elapsed_time;
 	struct timeval	end;
@@ -75,6 +85,8 @@ int	diff_time(struct timeval start, t_philo *data)
 	elapsed_time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec
 			- start.tv_usec);
 	if (elapsed_time > data->die)
-		return (is_dead(data->x, 0, data), 0);
+		return (is_dead(id, 0, data), 0);
+	if (is_dead(0, 1, data) != 0)
+		return (0);
 	return (1);
 }
