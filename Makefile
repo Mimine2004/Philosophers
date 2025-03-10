@@ -6,7 +6,7 @@
 #    By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/12 11:23:20 by marvin            #+#    #+#              #
-#    Updated: 2025/02/14 11:35:43 by hhecquet         ###   ########.fr        #
+#    Updated: 2025/03/10 15:48:35 by hhecquet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,8 +35,6 @@ BONUS = philo_bonus
 
 all: $(NAME)
 
-bonus: $(BONUS)
-
 $(NAME): FORCE
 	echo "Compiling Philosophers..."
 	cd philo && make -s all
@@ -63,45 +61,14 @@ $(NAME): FORCE
 	echo "  _/  / / Uuuuu    \\                    "
 	echo " \`----'(____________)                   $(RE)"                                    
 
-$(BONUS):
-	echo "Compiling Philosopher's bonus..."
-	cd philo_bonus && make -s all
-	echo "$(BO)$(BONUS) built successfully! 🤓👆"
-	echo "$(M)       _____"
-	echo "      /      \\"
-	echo "     (____/\\  )"
-	echo "      |___   ?(____            sometimes i sits and thinks"
-	echo "      _\\L.   |      \\     ___"
-	echo "    / /^^^\\ /.-'     |   |\\  |     but usually i'm just pooping"
-	echo "   ( /  _/u     |    \\___|_)_|_          "
-	echo "    \\|  \\\\      /    / \\_(______)         "
-	echo "     |   \\\\    /    /  |  |    |        "
-	echo "     |    ) _/    /   |  |    |         "
-	echo "     _\\__/       /___(   |    |         "
-	echo "  _/  __________/     \\  |    |         "
-	echo " //  /  (              ) |    |         "
-	echo "( \\__|___\\    \\______ /__|____|         "
-	echo " \\    (___\\   |______)_/                "
-	echo "  \\   |\\   \\  \\     /                   "
-	echo "   \\  | \\__ |  )___/                    "
-	echo "    \\  \\  )/  /__(                      "
-	echo "___ |  /_//   |   \\_________            "
-	echo "  _/  / / Uuuuu    \\                    "
-	echo " \`----'(____________)                   $(RE)"               
-
 clean:
 	echo "Cleaning philosophers object files..."
 	cd philo && make clean -s
-	
-	cd philo_bonus && make clean -s
 	rm -f *.o
 	echo "Philosophers object files have been cleaned 👌"
 
 fclean: clean
 	cd philo && make fclean -s
-	
-	cd philo_bonus && make fclean -s
-	
 	echo "Philosophers itself has been cleaned 🌟"
 
 re: fclean all

@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/14 13:47:18 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:54:56 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	*philosophers(void *arg)
 {
 	struct timeval	start;
 	t_philo			*data;
-	int				tmp;
+	long long		tmp;
 	int				second_fork;
 	int				id;
 
@@ -64,6 +64,7 @@ void	*philosophers(void *arg)
 		ft_printf(data, 7, id + 1);
 		gettimeofday(&start, NULL);
 		tmp = data->eat;
+		//printf("%lld \n", tmp);
 		while (tmp > 0)
 		{
 			usleep(100);
@@ -72,10 +73,12 @@ void	*philosophers(void *arg)
 			if (is_dead(0, 1, data) != 0)
 				return (pthread_mutex_unlock(&data->forks[id]), pthread_mutex_unlock(&data->forks[second_fork]), NULL);
 			tmp -= 100;
+			//printf("%lld \n", tmp);
 		}
 		number_of_meal(id, 0, data, -1);
 		if (is_dead(0, 1, data) != 0)
 			return (pthread_mutex_unlock(&data->forks[id]), pthread_mutex_unlock(&data->forks[second_fork]), NULL);
+		//printf("%lld \033[34;01m%d\033[00m has finished eating 🍽️\n", get_time(), id + 1);
 		ft_printf(data, 8, id + 1);
 		pthread_mutex_unlock(&data->forks[id]);
 		pthread_mutex_unlock(&data->forks[second_fork]);

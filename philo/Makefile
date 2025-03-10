@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: marvin <marvin@student.42.fr>              +#+  +:+       +#+         #
+#    By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/16 08:32:10 by marvin            #+#    #+#              #
-#    Updated: 2025/02/16 08:32:10 by marvin           ###   ########.fr        #
+#    Updated: 2025/03/10 15:54:18 by hhecquet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,19 +17,15 @@ NAME = philo
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g
 
-OUTDIR = ..
-
-OUTNAME = $(OUTDIR)/$(NAME)
-
 SRCS =	philo.c  \
 		philo_utils.c \
 		philo_utils2.c
 
 OBJ = $(SRCS:.c=.o)
 
-all: $(OUTNAME)
+all: $(NAME)
 
-$(OUTNAME): $(SRCS) philo.h | $(OUTDIR)
+$(NAME): $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) -o $(NAME)
 
 clean:

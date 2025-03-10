@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 12:23:43 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/14 13:40:36 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:53:43 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int			number_of_meal(int id, int read_only, t_philo *data, int var);
 int			is_dead(int i, int read_only, t_philo *data);
 void		*big_bro_is_watching(void *arg);
 //philo_utils.c
+long long	get_time(void);
 void		ft_printf(t_philo *data, int i, int id);
 int			data_init(t_philo *data, char **av, int var);
 int			diff_time(struct timeval start, t_philo *data, int id);
