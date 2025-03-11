@@ -16,7 +16,7 @@ void	*philosophers(void *arg)
 {
 	struct timeval	start;
 	t_philo			*data;
-	long long		tmp;
+	struct timeval	tmp;
 	int				second_fork;
 	int				id;
 
@@ -41,63 +41,61 @@ void	*philosophers(void *arg)
 	}
 	while (1)
 	{
-		while (pthread_mutex_lock(&data->forks[id]) != 0)
+		while (fork_state(id, 1, data, 0) != 0)
 		{
 			if (diff_time(start, data, id) == 0)
 				return (NULL);
-			if (is_dead(0, 1, data) != 0)
-				return (NULL);
 			usleep(100);
 		}
+		pthread_mutex_lock(&data->forks[id]);
+		fork_state(id, 0, data, 1);
+		if (diff_time(start, data, id) == 0)
+				return (NULL);
 		ft_printf(data, 1, id + 1);
-		while (pthread_mutex_lock(&data->forks[second_fork]) != 0)
+		while (fork_state(second_fork, 1, data, 0) != 0)
 		{
 			if (diff_time(start, data, id) == 0)
-				return (pthread_mutex_unlock(&data->forks[id]), NULL);
-			if (is_dead(0, 1, data) != 0)
-				return (pthread_mutex_unlock(&data->forks[id]), NULL);
+				return (NULL);
 			usleep(100);
 		}
+		pthread_mutex_lock(&data->forks[second_fork]);
+		fork_state(second_fork, 0, data, 1);
+		if (diff_time(start, data, id) == 0)
+			return (pthread_mutex_unlock(&data->forks[id]), NULL);
 		ft_printf(data, 6, id + 1);
 		if (is_dead(0, 1, data) != 0)
 			return (return_to_death(data, id, second_fork));
 		ft_printf(data, 7, id + 1);
 		gettimeofday(&start, NULL);
-		tmp = data->eat;
-		while (tmp > 0)
+		while (get_time() - ((start.tv_sec * 1000) + (start.tv_usec / 1000)) < data->eat)
 		{
 			if (diff_time(start, data, id) == 0)
 				return (return_to_death(data, id, second_fork));
-			if (is_dead(0, 1, data) != 0)
-				return (return_to_death(data, id, second_fork));
 			usleep(100);
-			tmp -= 100;
 		}
 		number_of_meal(id, 0, data, -1);
 		if (is_dead(0, 1, data) != 0)
 			return (return_to_death(data, id, second_fork));
 		ft_printf(data, 8, id + 1);
 		pthread_mutex_unlock(&data->forks[id]);
+		fork_state(id, 0, data, 0);
 		pthread_mutex_unlock(&data->forks[second_fork]);
+		fork_state(second_fork, 0, data, 0);
 		if (is_dead(0, 1, data) != 0)
-			return (return_to_death(data, id, second_fork));
+			return (NULL);
 		ft_printf(data, 2, id + 1);
-		tmp = data->sleep;
-		while (tmp > 0)
+		gettimeofday(&tmp, NULL);
+		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec / 1000)) < data->sleep)
 		{
 			if (diff_time(start, data, id) == 0)
-				return (return_to_death(data, id, second_fork));
-			if (is_dead(0, 1, data) != 0)
-				return (return_to_death(data, id, second_fork));
+				return (NULL);
 			usleep(100);
-			tmp -= 100;
 		}
 		ft_printf(data, 3, id + 1);
-		usleep(100);
 	}
 }
 
-int	number_of_meal(int id, int read_only, t_philo *data, int av)
+int	number_of_meal(int id, int read_only, t_philo *data, int av)//close when they all eat
 {
 	static int	meals[200];
 	static int	state = 0;
@@ -161,6 +159,7 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->death);
 	pthread_mutex_destroy(&data->meal);
+	pthread_mutex_destroy(&data->fork_state);
 	free(data);
 }
 

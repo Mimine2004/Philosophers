@@ -32,6 +32,7 @@ typedef struct s_philo
 	pthread_mutex_t	print;
 	pthread_mutex_t	death;
 	pthread_mutex_t	meal;
+	pthread_mutex_t	fork_state;
 }		t_philo;
 
 //philo.c
@@ -49,5 +50,6 @@ int			diff_time(struct timeval start, t_philo *data, int id);
 long long	ft_atol(char *str);
 int			ft_isnum(char *str);
 void		*ft_memset(void *s, int c, size_t n);
+int	fork_state(int id, int read_only, t_philo *data, int var);
 
 #endif 
