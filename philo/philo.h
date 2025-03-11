@@ -27,10 +27,8 @@ typedef struct s_philo
 	int				nbr_philo;
 	int				nbr_eat;
 	int				x;
-	pthread_t		*philo;
-	pthread_mutex_t	*forks;
-	int				*fork_state;
-	pthread_mutex_t	*table_lock;
+	pthread_t		philo[200];
+	pthread_mutex_t	forks[200];
 	pthread_mutex_t	print;
 	pthread_mutex_t	death;
 	pthread_mutex_t	meal;
@@ -43,6 +41,7 @@ int			is_dead(int i, int read_only, t_philo *data);
 void		*big_bro_is_watching(void *arg);
 //philo_utils.c
 long long	get_time(void);
+void		*return_to_death(t_philo *data, int id, int second_fork);
 void		ft_printf(t_philo *data, int i, int id);
 int			data_init(t_philo *data, char **av, int var);
 int			diff_time(struct timeval start, t_philo *data, int id);

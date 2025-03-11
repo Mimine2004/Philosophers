@@ -12,12 +12,11 @@
 
 #include "philo.h"
 
-long long	get_time(void)
+void	*return_to_death(t_philo *data, int id, int second_fork)
 {
-	struct timeval	time;
-
-	gettimeofday(&time, NULL);
-	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	pthread_mutex_unlock(&data->forks[id]);
+	pthread_mutex_unlock(&data->forks[second_fork]);
+	return (NULL);
 }
 
 void	ft_printf(t_philo *data, int i, int id)
@@ -30,21 +29,24 @@ void	ft_printf(t_philo *data, int i, int id)
 		return ;
 	pthread_mutex_lock(&data->print);
 	if (i == 1)
-		printf("%lld \033[34;01m%d\033[00m has taken a fork 🍴\n", get_time(), id);
+		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
+			id);
 	else if (i == 2)
-		printf("%lld \033[34;01m%d\033[00m is sleeping 😴\n", get_time(), id);
+		printf("%lld \033[1;34m%d\033[00m is sleeping 😴\n", get_time(), id);
 	else if (i == 3)
-		printf("%lld \033[34;01m%d\033[00m is thinking 🤔\n", get_time(), id);
+		printf("%lld \033[1;34m%d\033[00m is thinking 🤔\n", get_time(), id);
 	else if (i == 4)
-		printf("%lld \033[34;01m%d\033[00m died 💀\n", get_time(), is_dead(0, 1, data));
+		printf("%lld \033[1;34m%d\033[00m died 💀\n", get_time(), is_dead(0,
+				1, data));
 	else if (i == 5)
-		printf("%lld \033[34;01mEveryone\033[00m has eaten enough 🍽️\n", get_time());
+		printf("%lld \033[1;34mEveryone\033[00m has eaten enough 🍽️\n",
+			get_time());
 	else if (i == 6)
-		printf("%lld \033[34;01m%d\033[00m has taken another fork 🍴\n", get_time(), id);
+		printf("%lld \033[1;34m%d\033[00m has taken another fork 🍴\n", get_time(), id);//bye
 	else if (i == 7)
-		printf("%lld \033[34;01m%d\033[00m is eating 🍝\n", get_time(), id);
+		printf("%lld \033[1;34m%d\033[00m is eating 🍝\n", get_time(), id);
 	else if (i == 8)
-		printf("%lld \033[34;01m%d\033[00m has finished eating 🍽️\n", get_time(), id);
+		printf("%lld \033[1;34m%d\033[00m has finished eating 🍽️\n", get_time(), id);//bye
 	pthread_mutex_unlock(&data->print);
 }
 
@@ -54,6 +56,10 @@ int	data_init(t_philo *data, char **av, int var)
 
 	i = 0;
 	data->nbr_philo = ft_atol(av[1]);
+	if (data->nbr_philo <= 0)
+		return (printf("Error : How are they supposed to eat ?\n"), 0);
+	if (data->nbr_philo > 200)
+		return (printf("Error : Not enough spaghetti for everyone\n"), 0);
 	data->die = ft_atol(av[2]) * 1000;
 	data->eat = ft_atol(av[3]) * 1000;
 	data->sleep = ft_atol(av[4]) * 1000;
@@ -63,11 +69,6 @@ int	data_init(t_philo *data, char **av, int var)
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->death, NULL);
 	pthread_mutex_init(&data->meal, NULL);
-	if (data->nbr_philo <= 0)
-		return (0);
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_philo);
-	if (!data->forks)
-		return (0);
 	while (i < data->nbr_philo)
 	{
 		pthread_mutex_init(&data->forks[i], NULL);
@@ -78,8 +79,8 @@ int	data_init(t_philo *data, char **av, int var)
 
 int	diff_time(struct timeval start, t_philo *data, int id)
 {
-	long			elapsed_time;
-	struct timeval	end;
+	long long			elapsed_time;
+	struct timeval		end;
 
 	gettimeofday(&end, NULL);
 	elapsed_time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec
@@ -89,4 +90,15 @@ int	diff_time(struct timeval start, t_philo *data, int id)
 	if (is_dead(0, 1, data) != 0)
 		return (0);
 	return (1);
+}
+
+int	is_dead(int i, int read_only, t_philo *data)
+{
+	static int	dead = 0;
+
+	pthread_mutex_lock(&data->death);
+	if (read_only == 0)
+		dead = i + 1;
+	pthread_mutex_unlock(&data->death);
+	return (dead);
 }
