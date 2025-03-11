@@ -24,143 +24,94 @@ void	*philosophers(void *arg)
 	id = data->x;
 	second_fork = (id + 1) % data->nbr_philo;
 	gettimeofday(&start, NULL);
+	if (initialize(data, start, id) == 0)
+		return (NULL);
+	while (1)
+	{
+		if (eat_n_sleep(data, start, id, second_fork) == 0)
+			return (NULL);
+		gettimeofday(&tmp, NULL);
+		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec / 1000))
+			< data->sleep)
+		{
+			if (diff_time(start, data, id) == 0)
+				return (NULL);
+		}
+		ft_printf(data, 4, id + 1);
+	}
+}
+
+int	initialize(t_philo *data, struct timeval start, int id)
+{
 	if (data->nbr_philo == 1)
 	{
 		ft_printf(data, 1, id + 1);
 		while (1)
 		{
-			usleep(100);
 			if (diff_time(start, data, id) == 0)
-				return (NULL);
+				return (0);
 		}
 	}
 	if ((id) % 2 != 0)
+		ft_printf(data, 4, id + 1);
+	if ((id) % 2 != 0)
+		usleep(100);
+	return (1);
+}
+
+int	eat_n_sleep(t_philo *data, struct timeval start, int id, int second_fork)
+{
+	if (think_n_forks(data, start, id, second_fork) == 0)
+		return (0);
+	ft_printf(data, 2, id + 1);
+	gettimeofday(&start, NULL);
+	while (get_time() - ((start.tv_sec * 1000) + (start.tv_usec / 1000))
+		< data->eat)
 	{
-		ft_printf(data, 3, id + 1);
+		if (diff_time(start, data, id) == 0)
+			return (return_to_death(data, id, second_fork));
 		usleep(100);
 	}
-	while (1)
+	number_of_meal(id, 0, data, -1);
+	if (diff_time(start, data, id) == 0)
+		return (return_to_death(data, id, second_fork));
+	pthread_mutex_unlock(&data->forks[id]);
+	fork_state(id, 0, data, 0);
+	pthread_mutex_unlock(&data->forks[second_fork]);
+	fork_state(second_fork, 0, data, 0);
+	if (diff_time(start, data, id) == 0)
+		return (0);
+	ft_printf(data, 3, id + 1);
+	return (1);
+}
+
+int	think_n_forks(t_philo *data, struct timeval start, int id, int second_fork)
+{
+	while (fork_state(id, 1, data, 0) != 0)
 	{
-		while (fork_state(id, 1, data, 0) != 0)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		pthread_mutex_lock(&data->forks[id]);
-		fork_state(id, 0, data, 1);
 		if (diff_time(start, data, id) == 0)
-				return (NULL);
-		ft_printf(data, 1, id + 1);
-		while (fork_state(second_fork, 1, data, 0) != 0)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		pthread_mutex_lock(&data->forks[second_fork]);
-		fork_state(second_fork, 0, data, 1);
+			return (0);
+		usleep(100);
+	}
+	pthread_mutex_lock(&data->forks[id]);
+	fork_state(id, 0, data, 1);
+	if (diff_time(start, data, id) == 0)
+		return (0);
+	ft_printf(data, 1, id + 1);
+	while (fork_state(second_fork, 1, data, 0) != 0)
+	{
 		if (diff_time(start, data, id) == 0)
-			return (pthread_mutex_unlock(&data->forks[id]), NULL);
-		ft_printf(data, 6, id + 1);
-		if (is_dead(0, 1, data) != 0)
-			return (return_to_death(data, id, second_fork));
-		ft_printf(data, 7, id + 1);
-		gettimeofday(&start, NULL);
-		while (get_time() - ((start.tv_sec * 1000) + (start.tv_usec / 1000)) < data->eat)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (return_to_death(data, id, second_fork));
-			usleep(100);
-		}
-		number_of_meal(id, 0, data, -1);
-		if (is_dead(0, 1, data) != 0)
-			return (return_to_death(data, id, second_fork));
-		ft_printf(data, 8, id + 1);
-		pthread_mutex_unlock(&data->forks[id]);
-		fork_state(id, 0, data, 0);
-		pthread_mutex_unlock(&data->forks[second_fork]);
-		fork_state(second_fork, 0, data, 0);
-		if (is_dead(0, 1, data) != 0)
-			return (NULL);
-		ft_printf(data, 2, id + 1);
-		gettimeofday(&tmp, NULL);
-		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec / 1000)) < data->sleep)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		ft_printf(data, 3, id + 1);
+			return (0);
+		usleep(100);
 	}
-}
-
-int	number_of_meal(int id, int read_only, t_philo *data, int av)//close when they all eat
-{
-	static int	meals[200];
-	static int	state = 0;
-	int			i;
-
-	i = data->nbr_philo - 1;
-	pthread_mutex_lock(&data->meal);
-	if (state == 0)
-	{
-		ft_memset(meals, 0, sizeof(int) * (data->nbr_philo));
-		state = 1;
-	}
-	if (read_only == 0)
-		meals[id] += 1;
-	else if (av >= 0)
-	{
-		while (i >= 0)
-		{
-			if (meals[i] < data->nbr_eat)
-				return (pthread_mutex_unlock(&data->meal), 0);
-			i--;
-		}
-		return (pthread_mutex_unlock(&data->meal), is_dead(1, 0, data), 1);
-	}
-	return (pthread_mutex_unlock(&data->meal), 0);
-}
-
-void	*big_bro_is_watching(void *arg)
-{
-	t_philo	*data;
-
-	data = (t_philo *)arg;
-	while (1)
-	{
-		if (is_dead(0, 1, data) != 0)
-			return (ft_printf(data, 4, is_dead(0, 1, data)), NULL);
-		if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
-			return (ft_printf(data, 5, -1), NULL);
-	}
-}
-
-void	create_n_clean(t_philo *data, int i, int nbr_philo)
-{
-	pthread_t	big_brother;
-
-	while (i < nbr_philo)
-	{
-		data->x = i;
-		pthread_create(&data->philo[i], NULL, philosophers, data);
-		usleep(250);
-		i++;
-	}
-	pthread_create(&big_brother, NULL, big_bro_is_watching, data);
-	pthread_join(big_brother, NULL);
-	i--;
-	while (i >= 0)
-	{
-		pthread_join(data->philo[i], NULL);
-		pthread_mutex_destroy(&data->forks[i--]);
-	}
-	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->death);
-	pthread_mutex_destroy(&data->meal);
-	pthread_mutex_destroy(&data->fork_state);
-	free(data);
+	pthread_mutex_lock(&data->forks[second_fork]);
+	fork_state(second_fork, 0, data, 1);
+	if (diff_time(start, data, id) == 0)
+		return (pthread_mutex_unlock(&data->forks[id]), 0);
+	ft_printf(data, 1, id + 1);
+	if (diff_time(start, data, id) == 0)
+		return (return_to_death(data, id, second_fork));
+	return (1);
 }
 
 int	main(int ac, char **av)
@@ -188,3 +139,96 @@ int	main(int ac, char **av)
 	create_n_clean(data, i, nbr_philo);
 	return (0);
 }
+
+/*
+This function is like a bonus but, it print more information about the state
+of each philosophers. It can help for degugging cause' it's say when
+they let go forks, and when does he take his second one. it goes with
+the comment in "philo_utils2.c" like this one. I know its kinda
+digusting but ... I can't justifiy myself, I'm sorry.
+*/
+/***************************************************************************
+void	*philosophers(void *arg)
+{
+	struct timeval	start;
+	t_philo			*data;
+	struct timeval	tmp;
+	int				second_fork;
+	int				id;
+
+	data = (t_philo *)arg;
+	id = data->x;
+	second_fork = (id + 1) % data->nbr_philo;
+	gettimeofday(&start, NULL);
+	if (data->nbr_philo == 1)
+	{
+		ft_printf(data, 1, id + 1);
+		while (1)
+		{
+			usleep(100);
+			if (diff_time(start, data, id) == 0)
+				return (NULL);
+		}
+	}
+	if ((id) % 2 != 0)
+	{
+		ft_printf(data, 3, id + 1);
+		usleep(100);
+	}
+	while (1)
+	{
+		while (fork_state(id, 1, data, 0) != 0)
+		{
+			if (diff_time(start, data, id) == 0)
+				return (NULL);
+			usleep(100);
+		}
+		pthread_mutex_lock(&data->forks[id]);
+		fork_state(id, 0, data, 1);
+		if (diff_time(start, data, id) == 0)
+			return (NULL);
+		ft_printf(data, 1, id + 1);
+		while (fork_state(second_fork, 1, data, 0) != 0)
+		{
+			if (diff_time(start, data, id) == 0)
+				return (NULL);
+			usleep(100);
+		}
+		pthread_mutex_lock(&data->forks[second_fork]);
+		fork_state(second_fork, 0, data, 1);
+		if (diff_time(start, data, id) == 0)
+			return (pthread_mutex_unlock(&data->forks[id]), NULL);
+		ft_printf(data, 6, id + 1);
+		if (diff_time(start, data, id) == 0)
+			return (return_to_death(data, id, second_fork));
+		ft_printf(data, 7, id + 1);
+		gettimeofday(&start, NULL);
+		while (get_time() - ((start.tv_sec * 1000) + (start.tv_usec
+				/ 1000)) < data->eat)
+		{
+			if (diff_time(start, data, id) == 0)
+				return (return_to_death(data, id, second_fork));
+			usleep(100);
+		}
+		number_of_meal(id, 0, data, -1);
+		if (diff_time(start, data, id) == 0)
+			return (return_to_death(data, id, second_fork));
+		ft_printf(data, 8, id + 1);
+		pthread_mutex_unlock(&data->forks[id]);
+		fork_state(id, 0, data, 0);
+		pthread_mutex_unlock(&data->forks[second_fork]);
+		fork_state(second_fork, 0, data, 0);
+		if (diff_time(start, data, id) == 0)
+			return (NULL);
+		ft_printf(data, 2, id + 1);
+		gettimeofday(&tmp, NULL);
+		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec
+				/ 1000)) < data->sleep)
+		{
+			if (diff_time(start, data, id) == 0)
+				return (NULL);
+			usleep(100);
+		}
+		ft_printf(data, 3, id + 1);
+	}
+}***************************************************************************/

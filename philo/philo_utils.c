@@ -12,42 +12,25 @@
 
 #include "philo.h"
 
-void	*return_to_death(t_philo *data, int id, int second_fork)
+void	*big_bro_is_watching(void *arg)
+{
+	t_philo	*data;
+
+	data = (t_philo *)arg;
+	while (1)
+	{
+		if (is_dead(0, 1, data) != 0)
+			return (ft_printf(data, 6, is_dead(0, 1, data)), NULL);
+		if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
+			return (ft_printf(data, 5, -1), NULL);
+	}
+}
+
+int	return_to_death(t_philo *data, int id, int second_fork)
 {
 	pthread_mutex_unlock(&data->forks[id]);
 	pthread_mutex_unlock(&data->forks[second_fork]);
-	return (NULL);
-}
-
-void	ft_printf(t_philo *data, int i, int id)
-{
-	static int	state = 0;
-
-	if (is_dead(0, 1, data) != 0)
-		state = 1;
-	if (state == 1 && id > -1 && i != 4)
-		return ;
-	pthread_mutex_lock(&data->print);
-	if (i == 1)
-		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
-			id);
-	else if (i == 2)
-		printf("%lld \033[1;34m%d\033[00m is sleeping 😴\n", get_time(), id);
-	else if (i == 3)
-		printf("%lld \033[1;34m%d\033[00m is thinking 🤔\n", get_time(), id);
-	else if (i == 4)
-		printf("%lld \033[1;34m%d\033[00m died 💀\n", get_time(), is_dead(0,
-				1, data));
-	else if (i == 5)
-		printf("%lld \033[1;34mEveryone\033[00m has eaten enough 🍽️\n",
-			get_time());
-	else if (i == 6)
-		printf("%lld \033[1;34m%d\033[00m has taken another fork 🍴\n", get_time(), id);//bye
-	else if (i == 7)
-		printf("%lld \033[1;34m%d\033[00m is eating 🍝\n", get_time(), id);
-	else if (i == 8)
-		printf("%lld \033[1;34m%d\033[00m has finished eating 🍽️\n", get_time(), id);//bye
-	pthread_mutex_unlock(&data->print);
+	return (0);
 }
 
 int	data_init(t_philo *data, char **av, int var)
@@ -93,17 +76,6 @@ int	diff_time(struct timeval start, t_philo *data, int id)
 	if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
 		return (0);
 	return (1);
-}
-
-int	is_dead(int i, int read_only, t_philo *data)
-{
-	static int	dead = 0;
-
-	pthread_mutex_lock(&data->death);
-	if (read_only == 0 && dead == 0)
-		dead = i + 1;
-	pthread_mutex_unlock(&data->death);
-	return (dead);
 }
 
 int	fork_state(int id, int read_only, t_philo *data, int var)

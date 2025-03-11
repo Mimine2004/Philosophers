@@ -37,19 +37,26 @@ typedef struct s_philo
 
 //philo.c
 void		*philosophers(void *arg);
-int			number_of_meal(int id, int read_only, t_philo *data, int var);
-int			is_dead(int i, int read_only, t_philo *data);
-void		*big_bro_is_watching(void *arg);
+int			think_n_forks(t_philo *data, struct timeval start, int id,
+				int second_fork);
+int			eat_n_sleep(t_philo *data, struct timeval start, int id,
+				int second_fork);
+int			initialize(t_philo *data, struct timeval start, int id);
 //philo_utils.c
-long long	get_time(void);
-void		*return_to_death(t_philo *data, int id, int second_fork);
-void		ft_printf(t_philo *data, int i, int id);
+int			return_to_death(t_philo *data, int id, int second_fork);
 int			data_init(t_philo *data, char **av, int var);
 int			diff_time(struct timeval start, t_philo *data, int id);
+int			fork_state(int id, int read_only, t_philo *data, int var);
+void		*big_bro_is_watching(void *arg);
 //philo_utils2.c
+void		ft_printf(t_philo *data, int i, int id);
+int			is_dead(int i, int read_only, t_philo *data);
+int			number_of_meal(int id, int read_only, t_philo *data, int av);
+void		create_n_clean(t_philo *data, int i, int nbr_philo);
+//philo_basics.c
 long long	ft_atol(char *str);
 int			ft_isnum(char *str);
 void		*ft_memset(void *s, int c, size_t n);
-int	fork_state(int id, int read_only, t_philo *data, int var);
+long long	get_time(void);
 
 #endif 
