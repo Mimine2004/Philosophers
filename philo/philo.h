@@ -37,7 +37,7 @@ typedef struct s_philo
 
 //philo.c
 void		*philosophers(void *arg);
-int			think_n_forks(t_philo *data, struct timeval start, int id,
+long long	think_n_forks(t_philo *data, struct timeval start, int id,
 				int second_fork);
 int			eat_n_sleep(t_philo *data, struct timeval start, int id,
 				int second_fork);
