@@ -11,10 +11,9 @@
 /* ************************************************************************** */
 
 #include "philo.h"
-/*
+
 void	*philosophers(void *arg)
 {
-	struct timeval	start;
 	t_philo			*data;
 	struct timeval	tmp;
 	int				second_fork;
@@ -23,181 +22,95 @@ void	*philosophers(void *arg)
 	data = (t_philo *)arg;
 	id = data->x;
 	second_fork = (id + 1) % data->nbr_philo;
-	gettimeofday(&start, NULL);
-	if (data->nbr_philo == 1)
-	{
-		ft_printf(data, 1, id + 1);
-		while (1)
-		{
-			usleep(100);
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-		}
-	}
-	if ((id) % 2 != 0)
-	{
-		ft_printf(data, 4, id + 1);
-		usleep(100);
-	}
-	while (1)
-	{
-		while (fork_state(id, 1, data, 0) != 0)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		pthread_mutex_lock(&data->forks[id]);
-		fork_state(id, 0, data, 1);
-		if (diff_time(start, data, id) == 0)
-			return (NULL);
-		ft_printf(data, 1, id + 1);
-		while (fork_state(second_fork, 1, data, 0) != 0)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		pthread_mutex_lock(&data->forks[second_fork]);
-		fork_state(second_fork, 0, data, 1);
-		if (diff_time(start, data, id) == 0)
-			return (pthread_mutex_unlock(&data->forks[id]), NULL);
-		ft_printf(data, 1, id + 1);
-		if (diff_time(start, data, id) == 0)
-			return (return_to_death(data, id, second_fork));
-		ft_printf(data, 2, id + 1);
-		gettimeofday(&start, NULL);
-		while (get_time() - ((start.tv_sec * 1000) + (start.tv_usec
-				/ 1000)) < data->eat)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (return_to_death(data, id, second_fork));
-			usleep(100);
-		}
-		number_of_meal(id, 0, data, -1);
-		if (diff_time(start, data, id) == 0)
-			return (return_to_death(data, id, second_fork));
-		pthread_mutex_unlock(&data->forks[id]);
-		fork_state(id, 0, data, 0);
-		pthread_mutex_unlock(&data->forks[second_fork]);
-		fork_state(second_fork, 0, data, 0);
-		if (diff_time(start, data, id) == 0)
-			return (NULL);
-		ft_printf(data, 3, id + 1);
-		gettimeofday(&tmp, NULL);
-		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec
-				/ 1000)) < data->sleep)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		ft_printf(data, 4, id + 1);
-	}
-}*/
-
-void	*philosophers(void *arg)
-{
-	struct timeval	start;
-	t_philo			*data;
-	struct timeval	tmp;
-	int				second_fork;
-	int				id;
-
-	data = (t_philo *)arg;
-	id = data->x;
-	second_fork = (id + 1) % data->nbr_philo;
-	gettimeofday(&start, NULL);
-	if (initialize(data, start, id) == 0)
+	last_meal(id, 0, data);
+	if (initialize(data, id) == 0)
 		return (NULL);
 	while (1)
 	{
-		if (eat_n_sleep(data, start, id, second_fork) == 0)
+		if (eat_n_sleep(data, id, second_fork) == 0)
 			return (NULL);
 		gettimeofday(&tmp, NULL);
 		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec / 1000))
 			< data->sleep)
 		{
-			if (diff_time(start, data, id) == 0)
+			if (diff_time(last_meal(id, 1, data), data, id) == 0)
 				return (NULL);
 		}
 		ft_printf(data, 4, id + 1);
 	}
 }
 
-int	initialize(t_philo *data, struct timeval start, int id)
+int	initialize(t_philo *data, int id)
 {
 	if (data->nbr_philo == 1)
 	{
 		ft_printf(data, 1, id + 1);
 		while (1)
 		{
-			if (diff_time(start, data, id) == 0)
+			if (diff_time(last_meal(id, 1, data), data, id) == 0)
 				return (0);
 		}
 	}
 	if ((id) % 2 != 0)
 		ft_printf(data, 4, id + 1);
-	if ((id) % 2 != 0)
-		usleep(100);
 	return (1);
 }
-//fonction qui gettime of day et met le last meal dans un tableau avec un mutex
-int	eat_n_sleep(t_philo *data, struct timeval start, int id, int second_fork)
-{
-	static long long	last_meal = 0;
 
-	last_meal = think_n_forks(data, start, id, second_fork); 
-	if (last_meal == 0)
+int	eat_n_sleep(t_philo *data, int id, int second_fork)
+{
+	struct timeval	start;
+
+	if (think_n_forks(data, id, second_fork) == 0)
 		return (0);
 	ft_printf(data, 2, id + 1);
-	gettimeofday(&start, NULL);
-	while ((get_time() - last_meal) < data->eat)
+	start = last_meal(id, 0, data);
+	while ((get_time() - ((start.tv_sec * 1000) + (start.tv_usec
+					/ 1000))) < data->eat)
 	{
-		if (diff_time(start, data, id) == 0)
-			return (return_to_death(data, id, second_fork), 0);
+		if (diff_time(last_meal(id, 1, data), data, id) == 0)
+			return (return_to_death(data, id, second_fork));
 		usleep(100);
 	}
+	if (diff_time(last_meal(id, 1, data), data, id) == 0)
+		return (return_to_death(data, id, second_fork));
+	ft_printf(data, 3, id + 1);
 	number_of_meal(id, 0, data, -1);
-	if (diff_time(start, data, id) == 0)
-		return (return_to_death(data, id, second_fork), 0);
+	if (diff_time(last_meal(id, 1, data), data, id) == 0)
+		return (return_to_death(data, id, second_fork));
 	pthread_mutex_unlock(&data->forks[id]);
 	fork_state(id, 0, data, 0);
 	pthread_mutex_unlock(&data->forks[second_fork]);
 	fork_state(second_fork, 0, data, 0);
-	if (diff_time(start, data, id) == 0)
-		return (0);
-	ft_printf(data, 3, id + 1);
 	return (1);
 }
 
-long long	think_n_forks(t_philo *data, struct timeval start, int id, int second_fork)
+int	think_n_forks(t_philo *data, int id, int second_fork)
 {
 	while (fork_state(id, 1, data, 0) != 0)
 	{
-		if (diff_time(start, data, id) == 0)
+		if (diff_time(last_meal(id, 1, data), data, id) == 0)
 			return (0);
 		usleep(100);
 	}
 	pthread_mutex_lock(&data->forks[id]);
 	fork_state(id, 0, data, 1);
-	if (diff_time(start, data, id) == 0)
+	if (diff_time(last_meal(id, 1, data), data, id) == 0)
 		return (0);
 	ft_printf(data, 1, id + 1);
 	while (fork_state(second_fork, 1, data, 0) != 0)
 	{
-		if (diff_time(start, data, id) == 0)
+		if (diff_time(last_meal(id, 1, data), data, id) == 0)
 			return (0);
 		usleep(100);
 	}
 	pthread_mutex_lock(&data->forks[second_fork]);
 	fork_state(second_fork, 0, data, 1);
-	if (diff_time(start, data, id) == 0)
+	if (diff_time(last_meal(id, 1, data), data, id) == 0)
 		return (pthread_mutex_unlock(&data->forks[id]), 0);
 	ft_printf(data, 1, id + 1);
-	if (diff_time(start, data, id) == 0)
+	if (diff_time(last_meal(id, 1, data), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
-	return ((start.tv_sec * 1000) + (start.tv_usec / 1000));
+	return (1);
 }
 
 int	main(int ac, char **av)

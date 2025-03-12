@@ -19,10 +19,10 @@ void	*big_bro_is_watching(void *arg)
 	data = (t_philo *)arg;
 	while (1)
 	{
-		if (is_dead(0, 1, data) != 0)
-			return (ft_printf(data, 6, is_dead(0, 1, data)), NULL);
 		if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
 			return (ft_printf(data, 5, -1), NULL);
+		if (is_dead(0, 1, data) != 0)
+			return (ft_printf(data, 6, is_dead(0, 1, data)), NULL);
 	}
 }
 
@@ -71,9 +71,9 @@ int	diff_time(struct timeval start, t_philo *data, int id)
 			- start.tv_usec);
 	if (elapsed_time >= data->die)
 		return (is_dead(id, 0, data), 0);
-	if (is_dead(0, 1, data) != 0)
-		return (0);
 	if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
+		return (0);
+	if (is_dead(0, 1, data) != 0)
 		return (0);
 	return (1);
 }

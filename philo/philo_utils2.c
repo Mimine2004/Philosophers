@@ -16,11 +16,11 @@ void	ft_printf(t_philo *data, int i, int id)
 {
 	static int	state = 0;
 
+	pthread_mutex_lock(&data->print);
 	if (is_dead(0, 1, data) != 0)
 		state = 1;
 	if (state == 1 && id > -1 && i != 6)
 		return ;
-	pthread_mutex_lock(&data->print);
 	if (i == 1)
 		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
 			id);
@@ -102,6 +102,23 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 	pthread_mutex_destroy(&data->meal);
 	pthread_mutex_destroy(&data->fork_state);
 	free(data);
+}
+
+struct timeval	last_meal(int id, int read_only, t_philo *data)
+{
+	static struct timeval	time[200];
+	static int				state = 0;
+
+	pthread_mutex_lock(&data->fork_state);
+	if (state == 0)
+	{
+		ft_memset(time, 0, sizeof(int) * (data->nbr_philo));
+		state = 1;
+	}
+	if (read_only == 0)
+		gettimeofday(&time[id], NULL);
+	pthread_mutex_unlock(&data->fork_state);
+	return (time[id]);
 }
 
 /*
