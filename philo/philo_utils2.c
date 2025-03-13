@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 11:26:38 by hhecquet          #+#    #+#             */
-/*   Updated: 2025/02/14 11:27:03 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/13 12:13:07 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,14 +80,17 @@ int	number_of_meal(int id, int read_only, t_philo *data, int av)
 
 void	create_n_clean(t_philo *data, int i, int nbr_philo)
 {
-	pthread_t	big_brother;
+	pthread_t		big_brother;
+	struct timeval	wait;
 
 	while (i < nbr_philo)
 	{
 		data->x = i;
-		pthread_create(&data->philo[i], NULL, philosophers, data);
-		usleep(250);
-		i++;
+		pthread_create(&data->philo[i++], NULL, philosophers, data);
+		gettimeofday(&wait, NULL);
+		while ((get_time() - ((wait.tv_sec * 1000) + (wait.tv_usec
+						/ 1000))) < nbr_philo)
+			usleep(10);
 	}
 	pthread_create(&big_brother, NULL, big_bro_is_watching, data);
 	pthread_join(big_brother, NULL);

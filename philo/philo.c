@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/10 16:54:56 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/13 11:54:43 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	*philosophers(void *arg)
 		{
 			if (diff_time(last_meal(id, 1, data), data, id) == 0)
 				return (NULL);
+			usleep(100);
 		}
 		ft_printf(data, 4, id + 1);
 	}
@@ -49,10 +50,13 @@ int	initialize(t_philo *data, int id)
 		{
 			if (diff_time(last_meal(id, 1, data), data, id) == 0)
 				return (0);
+			usleep(100);
 		}
 	}
 	if ((id) % 2 != 0)
 		ft_printf(data, 4, id + 1);
+	if ((id) % 2 != 0)
+		usleep(100);
 	return (1);
 }
 
