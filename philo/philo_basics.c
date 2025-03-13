@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_basics.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 20:44:25 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/11 20:44:25 by marvin           ###   ########.fr       */
+/*   Updated: 2025/03/13 16:46:15 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ long long	ft_atol(char *str)
 		res = res * 10 + str[i] - '0';
 		i++;
 	}
-	return (res);
+	return (res); ///max long long
 }
 
 int	ft_isnum(char *str)
@@ -61,4 +61,17 @@ long long	get_time(void)
 
 	gettimeofday(&time, NULL);
 	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+}
+
+void	mutexes_destroy(int nbr_philo, t_philo *data)
+{
+	int	i;
+
+	i = nbr_philo - 1;
+	while (i >= 0)
+		pthread_mutex_destroy(&data->forks[i--]);
+	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->death);
+	pthread_mutex_destroy(&data->meal);
+	pthread_mutex_destroy(&data->fork_state);
 }

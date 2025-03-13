@@ -6,13 +6,13 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 11:26:38 by hhecquet          #+#    #+#             */
-/*   Updated: 2025/03/13 12:13:07 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:59:26 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_printf(t_philo *data, int i, int id)
+int	ft_printf(t_philo *data, int i, int id)
 {
 	static int	state = 0;
 
@@ -20,7 +20,7 @@ void	ft_printf(t_philo *data, int i, int id)
 	if (is_dead(0, 1, data) != 0)
 		state = 1;
 	if (state == 1 && id > -1 && i != 6)
-		return ;
+		return (pthread_mutex_unlock(&data->print));
 	if (i == 1)
 		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
 			id);
@@ -37,17 +37,20 @@ void	ft_printf(t_philo *data, int i, int id)
 		printf("%lld \033[1;34m%d\033[00m died 💀\n", get_time(), is_dead(0,
 				1, data));
 	pthread_mutex_unlock(&data->print);
+	return (1);
 }
 
 int	is_dead(int i, int read_only, t_philo *data)
 {
 	static int	dead = 0;
+	int			result;
 
 	pthread_mutex_lock(&data->death);
 	if (read_only == 0 && dead == 0)
 		dead = i + 1;
+	result = dead;
 	pthread_mutex_unlock(&data->death);
-	return (dead);
+	return (result);
 }
 
 int	number_of_meal(int id, int read_only, t_philo *data, int av)
@@ -73,7 +76,8 @@ int	number_of_meal(int id, int read_only, t_philo *data, int av)
 				return (pthread_mutex_unlock(&data->meal), 0);
 			i--;
 		}
-		return (pthread_mutex_unlock(&data->meal), is_dead(1, 0, data), 1);
+		pthread_mutex_unlock(&data->meal);
+		return (is_dead(1, 0, data), 1);
 	}
 	return (pthread_mutex_unlock(&data->meal), 0);
 }
@@ -82,11 +86,17 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 {
 	pthread_t		big_brother;
 	struct timeval	wait;
+	t_thread_data	*thread_data;
 
+	thread_data = malloc(sizeof(t_thread_data) * nbr_philo);
+	if (!thread_data)
+		return (mutexes_destroy(nbr_philo, data));
 	while (i < nbr_philo)
 	{
-		data->x = i;
-		pthread_create(&data->philo[i++], NULL, philosophers, data);
+		thread_data[i].data = data;
+		thread_data[i].id = i;
+		pthread_create(&data->philo[i], NULL, philosophers, &thread_data[i]);
+		i++;
 		gettimeofday(&wait, NULL);
 		while ((get_time() - ((wait.tv_sec * 1000) + (wait.tv_usec
 						/ 1000))) < nbr_philo)
@@ -96,21 +106,16 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 	pthread_join(big_brother, NULL);
 	i--;
 	while (i >= 0)
-	{
-		pthread_join(data->philo[i], NULL);
-		pthread_mutex_destroy(&data->forks[i--]);
-	}
-	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->death);
-	pthread_mutex_destroy(&data->meal);
-	pthread_mutex_destroy(&data->fork_state);
-	free(data);
+		pthread_join(data->philo[i--], NULL);
+	mutexes_destroy(nbr_philo, data);
+	free(thread_data);
 }
 
 struct timeval	last_meal(int id, int read_only, t_philo *data)
 {
 	static struct timeval	time[200];
 	static int				state = 0;
+	struct timeval			result;
 
 	pthread_mutex_lock(&data->fork_state);
 	if (state == 0)
@@ -120,8 +125,9 @@ struct timeval	last_meal(int id, int read_only, t_philo *data)
 	}
 	if (read_only == 0)
 		gettimeofday(&time[id], NULL);
+	result = time[id];
 	pthread_mutex_unlock(&data->fork_state);
-	return (time[id]);
+	return (result);
 }
 
 /*

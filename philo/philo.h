@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 12:23:43 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/10 16:53:43 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:59:03 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,12 @@ typedef struct s_philo
 	pthread_mutex_t	last_meal;
 }		t_philo;
 
+typedef struct s_thread_data
+{
+	t_philo	*data;
+	int		id;
+}	t_thread_data;
+
 //philo.c
 void			*philosophers(void *arg);
 int				think_n_forks(t_philo *data, int id,
@@ -50,7 +56,7 @@ int				diff_time(struct timeval start, t_philo *data, int id);
 int				fork_state(int id, int read_only, t_philo *data, int var);
 void			*big_bro_is_watching(void *arg);
 //philo_utils2.c
-void			ft_printf(t_philo *data, int i, int id);
+int				ft_printf(t_philo *data, int i, int id);
 int				is_dead(int i, int read_only, t_philo *data);
 int				number_of_meal(int id, int read_only, t_philo *data, int av);
 void			create_n_clean(t_philo *data, int i, int nbr_philo);
@@ -60,5 +66,6 @@ long long		ft_atol(char *str);
 int				ft_isnum(char *str);
 void			*ft_memset(void *s, int c, size_t n);
 long long		get_time(void);
+void			mutexes_destroy(int nbr_philo, t_philo *data);
 
 #endif 

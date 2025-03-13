@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/13 11:54:43 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:57:58 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,15 @@
 
 void	*philosophers(void *arg)
 {
+	t_thread_data	*thread_data;
 	t_philo			*data;
 	struct timeval	tmp;
 	int				second_fork;
 	int				id;
 
-	data = (t_philo *)arg;
-	id = data->x;
+	thread_data = (t_thread_data *)arg;
+	data = thread_data->data;
+	id = thread_data->id;
 	second_fork = (id + 1) % data->nbr_philo;
 	last_meal(id, 0, data);
 	if (initialize(data, id) == 0)
@@ -79,8 +81,6 @@ int	eat_n_sleep(t_philo *data, int id, int second_fork)
 		return (return_to_death(data, id, second_fork));
 	ft_printf(data, 3, id + 1);
 	number_of_meal(id, 0, data, -1);
-	if (diff_time(last_meal(id, 1, data), data, id) == 0)
-		return (return_to_death(data, id, second_fork));
 	pthread_mutex_unlock(&data->forks[id]);
 	fork_state(id, 0, data, 0);
 	pthread_mutex_unlock(&data->forks[second_fork]);
@@ -104,13 +104,13 @@ int	think_n_forks(t_philo *data, int id, int second_fork)
 	while (fork_state(second_fork, 1, data, 0) != 0)
 	{
 		if (diff_time(last_meal(id, 1, data), data, id) == 0)
-			return (0);
+			return (pthread_mutex_unlock(&data->forks[id]), 0);
 		usleep(100);
 	}
 	pthread_mutex_lock(&data->forks[second_fork]);
 	fork_state(second_fork, 0, data, 1);
 	if (diff_time(last_meal(id, 1, data), data, id) == 0)
-		return (pthread_mutex_unlock(&data->forks[id]), 0);
+		return (return_to_death(data, id, second_fork));
 	ft_printf(data, 1, id + 1);
 	if (diff_time(last_meal(id, 1, data), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
@@ -140,6 +140,7 @@ int	main(int ac, char **av)
 		return (free(data), 0);
 	i = 0;
 	create_n_clean(data, i, nbr_philo);
+	free(data);
 	return (0);
 }
 

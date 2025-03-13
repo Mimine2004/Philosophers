@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:05 by marvin            #+#    #+#             */
-/*   Updated: 2025/02/14 13:40:25 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:14:48 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ int	fork_state(int id, int read_only, t_philo *data, int var)
 {
 	static int	forks[200];
 	static int	state = 0;
+	int			result;
 
 	pthread_mutex_lock(&data->fork_state);
 	if (state == 0)
@@ -91,6 +92,7 @@ int	fork_state(int id, int read_only, t_philo *data, int var)
 	}
 	if (read_only == 0)
 		forks[id] = var;
+	result = forks[id];
 	pthread_mutex_unlock(&data->fork_state);
-	return (forks[id]);
+	return (result);
 }
