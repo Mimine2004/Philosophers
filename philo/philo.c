@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/13 16:57:58 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:12:55 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,33 +18,32 @@ void	*philosophers(void *arg)
 	t_philo			*data;
 	struct timeval	tmp;
 	int				second_fork;
-	int				id;
 
 	thread_data = (t_thread_data *)arg;
 	data = thread_data->data;
-	id = thread_data->id;
-	second_fork = (id + 1) % data->nbr_philo;
-	last_meal(id, 0, data);
-	if (initialize(data, id) == 0)
+	second_fork = (thread_data->id + 1) % data->nbr_philo;
+	if (initialize(data, thread_data->id) == 0)
 		return (NULL);
 	while (1)
 	{
-		if (eat_n_sleep(data, id, second_fork) == 0)
+		if (eat_n_sleep(data, thread_data->id, second_fork) == 0)
 			return (NULL);
 		gettimeofday(&tmp, NULL);
 		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec / 1000))
 			< data->sleep)
 		{
-			if (diff_time(last_meal(id, 1, data), data, id) == 0)
+			if (diff_time(last_meal(thread_data->id, 1, data), data,
+					thread_data->id) == 0)
 				return (NULL);
 			usleep(100);
 		}
-		ft_printf(data, 4, id + 1);
+		ft_printf(data, 4, thread_data->id + 1);
 	}
 }
 
 int	initialize(t_philo *data, int id)
 {
+	last_meal(id, 0, data);
 	if (data->nbr_philo == 1)
 	{
 		ft_printf(data, 1, id + 1);

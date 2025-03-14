@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:05 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/13 16:14:48 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:42:03 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,24 +40,24 @@ int	data_init(t_philo *data, char **av, int var)
 	i = 0;
 	data->nbr_philo = ft_atol(av[1]);
 	if (data->nbr_philo <= 0)
-		return (printf("Error : How are they supposed to eat ?\n"), 0);
+		return (printf("Error : Who gonna eat ?\n"), 0);
 	if (data->nbr_philo > 200)
 		return (printf("Error : Not enough spaghetti for everyone\n"), 0);
 	data->die = ft_atol(av[2]) * 1000;
 	data->eat = ft_atol(av[3]);
 	data->sleep = ft_atol(av[4]);
-	data->nbr_eat = -1;
+	data->nbr_eat = -2;
 	if (var)
 		data->nbr_eat = ft_atol(av[5]);
+	if (data->die == -1 || data->eat == -1 || data->sleep == -1
+		|| data->nbr_eat == -1)
+		return (printf("Error : incorrect values\n"), 0);
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->death, NULL);
 	pthread_mutex_init(&data->meal, NULL);
 	pthread_mutex_init(&data->fork_state, NULL);
 	while (i < data->nbr_philo)
-	{
-		pthread_mutex_init(&data->forks[i], NULL);
-		i++;
-	}
+		pthread_mutex_init(&data->forks[i++], NULL);
 	return (1);
 }
 

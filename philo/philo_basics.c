@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 20:44:25 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/13 16:46:15 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/14 11:32:45 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ long long	ft_atol(char *str)
 		res = res * 10 + str[i] - '0';
 		i++;
 	}
-	return (res); ///max long long
+	if (res > 9223372036854775807 || res < 0)
+		res = -1;
+	return (res);
 }
 
 int	ft_isnum(char *str)
