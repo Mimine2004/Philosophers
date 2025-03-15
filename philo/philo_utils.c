@@ -77,7 +77,7 @@ int	diff_time(struct timeval start, t_philo *data, int id)
 		return (0);
 	return (1);
 }
-
+/*
 int	fork_state(int id, int read_only, t_philo *data, int var)
 {
 	static int	forks[200];
@@ -96,3 +96,4 @@ int	fork_state(int id, int read_only, t_philo *data, int var)
 	pthread_mutex_unlock(&data->fork_state);
 	return (result);
 }
+*/

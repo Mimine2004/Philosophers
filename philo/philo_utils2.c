@@ -99,7 +99,7 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 		i++;
 		gettimeofday(&wait, NULL);
 		while ((get_time() - ((wait.tv_sec * 1000) + (wait.tv_usec
-						/ 1000))) < nbr_philo)
+						/ 1000))) < (nbr_philo / 10))
 			usleep(10);
 	}
 	pthread_create(&big_brother, NULL, big_bro_is_watching, data);
