@@ -24,7 +24,7 @@ long long	ft_atol(char *str)
 		res = res * 10 + str[i] - '0';
 		i++;
 	}
-	if (res > 9223372036854775807 || res < 0)
+	if (res > 2147483647 || res < 0)
 		res = -1;
 	return (res);
 }
@@ -75,5 +75,16 @@ void	mutexes_destroy(int nbr_philo, t_philo *data)
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->death);
 	pthread_mutex_destroy(&data->meal);
-	pthread_mutex_destroy(&data->fork_state);
+	pthread_mutex_destroy(&data->last_meal);
+	pthread_mutex_destroy(&data->end);
+}
+
+void ft_usleep(int time)
+{
+	long long	start;
+
+	start = get_time();
+	while (get_time() - start < time)
+		usleep(100);
+	return ;
 }
