@@ -22,7 +22,8 @@ void	*big_bro_is_watching(void *arg)
 		if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
 			return (end(0, 1, data), ft_printf(data, 5, -1), NULL);
 		if (is_dead(0, 1, data) != 0)
-			return (end(0, 1, data), ft_printf(data, 6, is_dead(0, 1, data)), NULL);
+			return (end(0, 1, data), ft_printf(data, 6, is_dead(0, 1, data)),
+				NULL);
 		usleep(10);
 	}
 }
@@ -78,10 +79,10 @@ int	diff_time(struct timeval start, t_philo *data, int id)
 	return (1);
 }
 
-int end(int read_only, int var, t_philo *data)
+int	end(int read_only, int var, t_philo *data)
 {
 	static int	end = 0;
-	int result;
+	int			result;
 
 	pthread_mutex_lock(&data->end);
 	if (read_only == 0)
@@ -90,23 +91,3 @@ int end(int read_only, int var, t_philo *data)
 	pthread_mutex_unlock(&data->end);
 	return (result);
 }
-/*
-int	fork_state(int id, int read_only, t_philo *data, int var)
-{
-	static int	forks[200];
-	static int	state = 0;
-	int			result;
-
-	pthread_mutex_lock(&data->fork_state);
-	if (state == 0)
-	{
-		ft_memset(forks, 0, sizeof(int) * (data->nbr_philo));
-		state = 1;
-	}
-	if (read_only == 0)
-		forks[id] = var;
-	result = forks[id];
-	pthread_mutex_unlock(&data->fork_state);
-	return (result);
-}
-*/

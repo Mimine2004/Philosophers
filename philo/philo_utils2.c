@@ -85,7 +85,6 @@ int	number_of_meal(int id, int read_only, t_philo *data, int av)
 void	create_n_clean(t_philo *data, int i, int nbr_philo)
 {
 	pthread_t		big_brother;
-	//struct timeval	wait;
 	t_thread_data	*thread_data;
 
 	thread_data = malloc(sizeof(t_thread_data) * nbr_philo);
@@ -97,8 +96,6 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 		thread_data[i].id = i;
 		pthread_create(&data->philo[i], NULL, philosophers, &thread_data[i]);
 		i++;
-		//gettimeofday(&wait, NULL);
-		//while ((get_time() * 1000 - ((wait.tv_sec * 1000000) + (wait.tv_usec))) < (nbr_philo))
 		usleep(100);
 	}
 	pthread_create(&big_brother, NULL, big_bro_is_watching, data);

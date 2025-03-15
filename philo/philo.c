@@ -81,33 +81,17 @@ int	eat_n_sleep(t_philo *data, int id, int second_fork)
 	ft_printf(data, 3, id + 1);
 	number_of_meal(id, 0, data, -1);
 	pthread_mutex_unlock(&data->forks[id]);
-	//fork_state(id, 0, data, 0);
 	pthread_mutex_unlock(&data->forks[second_fork]);
-	//fork_state(second_fork, 0, data, 0);
 	return (1);
 }
 
 int	think_n_forks(t_philo *data, int id, int second_fork)
 {
-	//while (fork_state(id, 1, data, 0) != 0)
-	//{
-	//	if (diff_time(last_meal(id, 1, data), data, id) == 0)
-	//		return (0);
-	//	ft_usleep(100);
-	//}
 	pthread_mutex_lock(&data->forks[id]);
-	//fork_state(id, 0, data, 1);
 	if (diff_time(last_meal(id, 1, data), data, id) == 0)
 		return (0);
 	ft_printf(data, 1, id + 1);
-	//while (fork_state(second_fork, 1, data, 0) != 0)
-	//{
-	//	if (diff_time(last_meal(id, 1, data), data, id) == 0)
-	//		return (pthread_mutex_unlock(&data->forks[id]), 0);
-	//	ft_usleep(100);
-	//}
 	pthread_mutex_lock(&data->forks[second_fork]);
-	//fork_state(second_fork, 0, data, 1);
 	if (diff_time(last_meal(id, 1, data), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
 	ft_printf(data, 1, id + 1);

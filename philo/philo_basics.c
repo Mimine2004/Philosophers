@@ -79,7 +79,7 @@ void	mutexes_destroy(int nbr_philo, t_philo *data)
 	pthread_mutex_destroy(&data->end);
 }
 
-void ft_usleep(int time)
+void	ft_usleep(int time)
 {
 	long long	start;
 
