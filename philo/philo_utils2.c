@@ -17,9 +17,9 @@ int	ft_printf(t_philo *data, int i, int id)
 	static int	state = 0;
 
 	pthread_mutex_lock(&data->print);
-	if (is_dead(0, 1, data) != 0)
+	if (is_dead(0, 1, data) != 0 || end(1, 1, data) != 0)
 		state = 1;
-	if (state == 1 && id > -1 && i != 6)
+	if (state == 1 && i != 5 && i != 6)
 		return (pthread_mutex_unlock(&data->print));
 	if (i == 1)
 		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
@@ -85,7 +85,6 @@ int	number_of_meal(int id, int read_only, t_philo *data, int av)
 void	create_n_clean(t_philo *data, int i, int nbr_philo)
 {
 	pthread_t		big_brother;
-	struct timeval	wait;
 	t_thread_data	*thread_data;
 
 	thread_data = malloc(sizeof(t_thread_data) * nbr_philo);
@@ -97,10 +96,7 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 		thread_data[i].id = i;
 		pthread_create(&data->philo[i], NULL, philosophers, &thread_data[i]);
 		i++;
-		gettimeofday(&wait, NULL);
-		while ((get_time() - ((wait.tv_sec * 1000) + (wait.tv_usec
-						/ 1000))) < (nbr_philo / 10))
-			usleep(10);
+		usleep(100);
 	}
 	pthread_create(&big_brother, NULL, big_bro_is_watching, data);
 	pthread_join(big_brother, NULL);
@@ -117,7 +113,7 @@ struct timeval	last_meal(int id, int read_only, t_philo *data)
 	static int				state = 0;
 	struct timeval			result;
 
-	pthread_mutex_lock(&data->fork_state);
+	pthread_mutex_lock(&data->last_meal);
 	if (state == 0)
 	{
 		ft_memset(time, 0, sizeof(int) * (data->nbr_philo));
@@ -126,7 +122,7 @@ struct timeval	last_meal(int id, int read_only, t_philo *data)
 	if (read_only == 0)
 		gettimeofday(&time[id], NULL);
 	result = time[id];
-	pthread_mutex_unlock(&data->fork_state);
+	pthread_mutex_unlock(&data->last_meal);
 	return (result);
 }
 
