@@ -14,9 +14,13 @@
 
 void	*big_bro_is_watching(void *arg)
 {
-	t_philo	*data;
+	t_thread_data	*thread_data;
+	t_philo			*data;
+	int				i;
 
-	data = (t_philo *)arg;
+	thread_data = (t_thread_data *)arg;
+	data = thread_data->data;
+	i = 0;
 	while (1)
 	{
 		if (number_of_meal(0, 1, data, data->nbr_eat) == 1)
@@ -24,6 +28,9 @@ void	*big_bro_is_watching(void *arg)
 		if (is_dead(0, 1, data) != 0)
 			return (end(0, 1, data), ft_printf(data, 6, is_dead(0, 1, data)),
 				NULL);
+		i = last_meal(0, 1, data, 1);
+		if (i != 0)
+			return (end(0, 1, data), ft_printf(data, 6, i + 1), NULL);
 		usleep(10);
 	}
 }
@@ -64,17 +71,16 @@ int	data_init(t_philo *data, char **av, int var)
 	return (1);
 }
 
-int	diff_time(struct timeval start, t_philo *data, int id)
+int	diff_time(long long start, t_philo *data, int id)
 {
 	long long			elapsed_time;
 	struct timeval		next;
 
 	gettimeofday(&next, NULL);
-	elapsed_time = (next.tv_sec - start.tv_sec) * 1000 + (next.tv_usec
-			- start.tv_usec) / 1000;
+	elapsed_time = (next.tv_sec * 1000 + next.tv_usec / 1000) - start;
 	if (elapsed_time >= data->die)
 		return (is_dead(id, 0, data), 0);
-	if (end(0, 0, data) == 1)
+	if (end(1, 0, data) == 1)
 		return (0);
 	return (1);
 }

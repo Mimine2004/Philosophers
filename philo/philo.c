@@ -32,10 +32,10 @@ void	*philosophers(void *arg)
 		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec / 1000))
 			< data->sleep)
 		{
-			if (diff_time(last_meal(thread_data->id, 1, data), data,
+			if (diff_time(last_meal(thread_data->id, 1, data, 0), data,
 					thread_data->id) == 0)
 				return (NULL);
-			ft_usleep(100);
+			usleep(100);
 		}
 		ft_printf(data, 4, thread_data->id + 1);
 	}
@@ -43,38 +43,37 @@ void	*philosophers(void *arg)
 
 int	initialize(t_philo *data, int id)
 {
-	last_meal(id, 0, data);
+	last_meal(id, 0, data, 0);
 	if (data->nbr_philo == 1)
 	{
 		ft_printf(data, 1, id + 1);
 		while (1)
 		{
-			if (diff_time(last_meal(id, 1, data), data, id) == 0)
+			if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
 				return (0);
-			ft_usleep(100);
+			usleep(100);
 		}
 	}
 	if ((id) % 2 != 0)
 		ft_printf(data, 4, id + 1);
 	if ((id) % 2 != 0)
-		ft_usleep(100);
+		usleep(100);
 	return (1);
 }
 
 int	eat_n_sleep(t_philo *data, int id, int second_fork)
 {
-	struct timeval	start;
+	long long	start;
 
 	if (think_n_forks(data, id, second_fork) == 0)
 		return (0);
 	ft_printf(data, 2, id + 1);
-	start = last_meal(id, 0, data);
-	while ((get_time() - ((start.tv_sec * 1000) + (start.tv_usec
-					/ 1000))) < data->eat)
+	start = last_meal(id, 0, data, 0);
+	while (get_time() - start < data->eat)
 	{
 		if (diff_time(start, data, id) == 0)
 			return (return_to_death(data, id, second_fork));
-		ft_usleep(100);
+		usleep(100);
 	}
 	if (diff_time(start, data, id) == 0)
 		return (return_to_death(data, id, second_fork));
@@ -87,15 +86,26 @@ int	eat_n_sleep(t_philo *data, int id, int second_fork)
 
 int	think_n_forks(t_philo *data, int id, int second_fork)
 {
-	pthread_mutex_lock(&data->forks[id]);
-	if (diff_time(last_meal(id, 1, data), data, id) == 0)
-		return (0);
+	int		first;
+	int		second;
+
+	if (id < second_fork)
+		first = id;
+	else
+		first = second_fork;
+	if (id > second_fork)
+		second = id;
+	else
+		second = second_fork;
+	pthread_mutex_lock(&data->forks[first]);
+	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
+		return (pthread_mutex_unlock(&data->forks[first]), 0);
 	ft_printf(data, 1, id + 1);
-	pthread_mutex_lock(&data->forks[second_fork]);
-	if (diff_time(last_meal(id, 1, data), data, id) == 0)
+	pthread_mutex_lock(&data->forks[second]);
+	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
 	ft_printf(data, 1, id + 1);
-	if (diff_time(last_meal(id, 1, data), data, id) == 0)
+	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
 	return (1);
 }
@@ -152,7 +162,7 @@ void	*philosophers(void *arg)
 		ft_printf(data, 1, id + 1);
 		while (1)
 		{
-			ft_usleep(100);
+			usleep(100);
 			if (diff_time(start, data, id) == 0)
 				return (NULL);
 		}
@@ -160,7 +170,7 @@ void	*philosophers(void *arg)
 	if ((id) % 2 != 0)
 	{
 		ft_printf(data, 3, id + 1);
-		ft_usleep(100);
+		usleep(100);
 	}
 	while (1)
 	{
@@ -168,7 +178,7 @@ void	*philosophers(void *arg)
 		{
 			if (diff_time(start, data, id) == 0)
 				return (NULL);
-			ft_usleep(100);
+			usleep(100);
 		}
 		pthread_mutex_lock(&data->forks[id]);
 		fork_state(id, 0, data, 1);
@@ -179,7 +189,7 @@ void	*philosophers(void *arg)
 		{
 			if (diff_time(start, data, id) == 0)
 				return (NULL);
-			ft_usleep(100);
+			usleep(100);
 		}
 		pthread_mutex_lock(&data->forks[second_fork]);
 		fork_state(second_fork, 0, data, 1);
@@ -195,7 +205,7 @@ void	*philosophers(void *arg)
 		{
 			if (diff_time(start, data, id) == 0)
 				return (return_to_death(data, id, second_fork));
-			ft_usleep(100);
+			usleep(100);
 		}
 		number_of_meal(id, 0, data, -1);
 		if (diff_time(start, data, id) == 0)
@@ -214,7 +224,7 @@ void	*philosophers(void *arg)
 		{
 			if (diff_time(start, data, id) == 0)
 				return (NULL);
-			ft_usleep(100);
+			usleep(100);
 		}
 		ft_printf(data, 3, id + 1);
 	}

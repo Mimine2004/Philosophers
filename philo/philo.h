@@ -52,7 +52,7 @@ int				initialize(t_philo *data, int id);
 //philo_utils.c
 int				return_to_death(t_philo *data, int id, int second_fork);
 int				data_init(t_philo *data, char **av, int var);
-int				diff_time(struct timeval start, t_philo *data, int id);
+int				diff_time(long long start, t_philo *data, int id);
 void			*big_bro_is_watching(void *arg);
 int				end(int read_only, int var, t_philo *data);
 //philo_utils2.c
@@ -60,13 +60,13 @@ int				ft_printf(t_philo *data, int i, int id);
 int				is_dead(int i, int read_only, t_philo *data);
 int				number_of_meal(int id, int read_only, t_philo *data, int av);
 void			create_n_clean(t_philo *data, int i, int nbr_philo);
-struct timeval	last_meal(int id, int read_only, t_philo *data);
+long long		last_meal(int id, int read_only, t_philo *data, int av);
 //philo_basics.c
 long long		ft_atol(char *str);
 int				ft_isnum(char *str);
-void			*ft_memset(void *s, int c, size_t n);
+int				ft_memset(void *s, int c, size_t n);
 long long		get_time(void);
 void			mutexes_destroy(int nbr_philo, t_philo *data);
-void			ft_usleep(int time);
+//void			ft_usleep(int time);
 
 #endif 

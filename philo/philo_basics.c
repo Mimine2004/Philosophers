@@ -43,7 +43,7 @@ int	ft_isnum(char *str)
 	return (1);
 }
 
-void	*ft_memset(void *s, int c, size_t n)
+int	ft_memset(void *s, int c, size_t n)
 {
 	unsigned char	*str;
 
@@ -54,7 +54,7 @@ void	*ft_memset(void *s, int c, size_t n)
 		str++;
 		n--;
 	}
-	return ((void *)s);
+	return (1);
 }
 
 long long	get_time(void)
@@ -78,13 +78,13 @@ void	mutexes_destroy(int nbr_philo, t_philo *data)
 	pthread_mutex_destroy(&data->last_meal);
 	pthread_mutex_destroy(&data->end);
 }
-
+/*
 void	ft_usleep(int time)
 {
 	long long	start;
 
 	start = get_time();
-	while (get_time() - start < time)
+	while (get_time() * 1000 - start * 1000 < time)
 		usleep(100);
 	return ;
-}
+}*/

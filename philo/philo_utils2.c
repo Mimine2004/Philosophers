@@ -20,7 +20,7 @@ int	ft_printf(t_philo *data, int i, int id)
 	if (is_dead(0, 1, data) != 0 || end(1, 1, data) != 0)
 		state = 1;
 	if (state == 1 && i != 5 && i != 6)
-		return (pthread_mutex_unlock(&data->print));
+		return (pthread_mutex_unlock(&data->print), 0);
 	if (i == 1)
 		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
 			id);
@@ -87,7 +87,7 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 	pthread_t		big_brother;
 	t_thread_data	*thread_data;
 
-	thread_data = malloc(sizeof(t_thread_data) * nbr_philo);
+	thread_data = malloc(sizeof(t_thread_data) * (nbr_philo + 1));
 	if (!thread_data)
 		return (mutexes_destroy(nbr_philo, data));
 	while (i < nbr_philo)
@@ -98,7 +98,9 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 		i++;
 		usleep(100);
 	}
-	pthread_create(&big_brother, NULL, big_bro_is_watching, data);
+	thread_data[i].data = data;
+	thread_data[i].id = i;
+	pthread_create(&big_brother, NULL, big_bro_is_watching, &thread_data[i]);
 	pthread_join(big_brother, NULL);
 	i--;
 	while (i >= 0)
@@ -107,21 +109,30 @@ void	create_n_clean(t_philo *data, int i, int nbr_philo)
 	free(thread_data);
 }
 
-struct timeval	last_meal(int id, int read_only, t_philo *data)
+long long	last_meal(int id, int read_only, t_philo *data, int av)
 {
 	static struct timeval	time[200];
 	static int				state = 0;
-	struct timeval			result;
+	long long				result;
+	int						i;
 
 	pthread_mutex_lock(&data->last_meal);
+	i = -1;
 	if (state == 0)
-	{
-		ft_memset(time, 0, sizeof(int) * (data->nbr_philo));
-		state = 1;
-	}
+		state = ft_memset(time, 0, sizeof(struct timeval) * data->nbr_philo);
 	if (read_only == 0)
 		gettimeofday(&time[id], NULL);
-	result = time[id];
+	result = time[id].tv_sec * 1000 + time[id].tv_usec / 1000;
+	if (av != 0)
+	{
+		while (++i < data->nbr_philo)
+		{
+			if (get_time() - (time[i].tv_sec * 1000 + time[i].tv_usec / 1000)
+				>= data->die)
+				return (pthread_mutex_unlock(&data->last_meal), i++);
+		}
+		result = 0;
+	}
 	pthread_mutex_unlock(&data->last_meal);
 	return (result);
 }
