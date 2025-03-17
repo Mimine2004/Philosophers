@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 20:44:25 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/14 11:32:45 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/17 12:12:25 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,3 @@ void	mutexes_destroy(int nbr_philo, t_philo *data)
 	pthread_mutex_destroy(&data->last_meal);
 	pthread_mutex_destroy(&data->end);
 }
-/*
-void	ft_usleep(int time)
-{
-	long long	start;
-
-	start = get_time();
-	while (get_time() * 1000 - start * 1000 < time)
-		usleep(100);
-	return ;
-}*/

@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/17 09:33:11 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/17 12:16:07 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,24 @@ int	eat_n_sleep(t_philo *data, int id, int second_fork)
 
 int	think_n_forks(t_philo *data, int id, int second_fork)
 {
-	pthread_mutex_lock(&data->forks[id]);
+	int	first;
+	int	second;
+
+	if (id % 2 == 0)
+	{
+		first = id;
+		second = second_fork;
+	}
+	else
+	{
+		first = second_fork;
+		second = id;
+	}
+	pthread_mutex_lock(&data->forks[first]);
 	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
-		return (pthread_mutex_unlock(&data->forks[id]), 0);
+		return (pthread_mutex_unlock(&data->forks[first]), 0);
 	ft_printf(data, 1, id + 1);
-	pthread_mutex_lock(&data->forks[second_fork]);
+	pthread_mutex_lock(&data->forks[second]);
 	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
 	ft_printf(data, 1, id + 1);

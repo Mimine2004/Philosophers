@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 12:23:43 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/13 16:59:03 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/17 12:15:54 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,5 @@ int				ft_isnum(char *str);
 int				ft_memset(void *s, int c, size_t n);
 long long		get_time(void);
 void			mutexes_destroy(int nbr_philo, t_philo *data);
-//void			ft_usleep(int time);
 
 #endif 
