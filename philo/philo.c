@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:08 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/14 11:12:55 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/17 09:33:11 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,22 +86,11 @@ int	eat_n_sleep(t_philo *data, int id, int second_fork)
 
 int	think_n_forks(t_philo *data, int id, int second_fork)
 {
-	int		first;
-	int		second;
-
-	if (id < second_fork)
-		first = id;
-	else
-		first = second_fork;
-	if (id > second_fork)
-		second = id;
-	else
-		second = second_fork;
-	pthread_mutex_lock(&data->forks[first]);
+	pthread_mutex_lock(&data->forks[id]);
 	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
-		return (pthread_mutex_unlock(&data->forks[first]), 0);
+		return (pthread_mutex_unlock(&data->forks[id]), 0);
 	ft_printf(data, 1, id + 1);
-	pthread_mutex_lock(&data->forks[second]);
+	pthread_mutex_lock(&data->forks[second_fork]);
 	if (diff_time(last_meal(id, 1, data, 0), data, id) == 0)
 		return (return_to_death(data, id, second_fork));
 	ft_printf(data, 1, id + 1);
@@ -136,96 +125,3 @@ int	main(int ac, char **av)
 	free(data);
 	return (0);
 }
-
-/*
-This function is like a bonus but, it print more information about the state
-of each philosophers. It can help for degugging cause' it's say when
-they let go forks, and when does he take his second one. it goes with
-the comment in "philo_utils2.c" like this one. I know its kinda
-digusting but ... I can't justifiy myself, I'm sorry.
-*/
-/***************************************************************************
-void	*philosophers(void *arg)
-{
-	struct timeval	start;
-	t_philo			*data;
-	struct timeval	tmp;
-	int				second_fork;
-	int				id;
-
-	data = (t_philo *)arg;
-	id = data->x;
-	second_fork = (id + 1) % data->nbr_philo;
-	gettimeofday(&start, NULL);
-	if (data->nbr_philo == 1)
-	{
-		ft_printf(data, 1, id + 1);
-		while (1)
-		{
-			usleep(100);
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-		}
-	}
-	if ((id) % 2 != 0)
-	{
-		ft_printf(data, 3, id + 1);
-		usleep(100);
-	}
-	while (1)
-	{
-		while (fork_state(id, 1, data, 0) != 0)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		pthread_mutex_lock(&data->forks[id]);
-		fork_state(id, 0, data, 1);
-		if (diff_time(start, data, id) == 0)
-			return (NULL);
-		ft_printf(data, 1, id + 1);
-		while (fork_state(second_fork, 1, data, 0) != 0)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		pthread_mutex_lock(&data->forks[second_fork]);
-		fork_state(second_fork, 0, data, 1);
-		if (diff_time(start, data, id) == 0)
-			return (pthread_mutex_unlock(&data->forks[id]), NULL);
-		ft_printf(data, 6, id + 1);
-		if (diff_time(start, data, id) == 0)
-			return (return_to_death(data, id, second_fork));
-		ft_printf(data, 7, id + 1);
-		gettimeofday(&start, NULL);
-		while (get_time() - ((start.tv_sec * 1000) + (start.tv_usec
-				/ 1000)) < data->eat)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (return_to_death(data, id, second_fork));
-			usleep(100);
-		}
-		number_of_meal(id, 0, data, -1);
-		if (diff_time(start, data, id) == 0)
-			return (return_to_death(data, id, second_fork));
-		ft_printf(data, 8, id + 1);
-		pthread_mutex_unlock(&data->forks[id]);
-		fork_state(id, 0, data, 0);
-		pthread_mutex_unlock(&data->forks[second_fork]);
-		fork_state(second_fork, 0, data, 0);
-		if (diff_time(start, data, id) == 0)
-			return (NULL);
-		ft_printf(data, 2, id + 1);
-		gettimeofday(&tmp, NULL);
-		while (get_time() - ((tmp.tv_sec * 1000) + (tmp.tv_usec
-				/ 1000)) < data->sleep)
-		{
-			if (diff_time(start, data, id) == 0)
-				return (NULL);
-			usleep(100);
-		}
-		ft_printf(data, 3, id + 1);
-	}
-}***************************************************************************/

@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 11:26:38 by hhecquet          #+#    #+#             */
-/*   Updated: 2025/03/13 16:59:26 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/17 09:34:47 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ int	ft_printf(t_philo *data, int i, int id)
 		printf("%lld \033[1;34mEveryone\033[00m has eaten enough 🍽️\n",
 			get_time());
 	else if (i == 6)
-		printf("%lld \033[1;34m%d\033[00m died 💀\n", get_time(), is_dead(0,
-				1, data));
+		printf("%lld \033[1;34m%d\033[00m died 💀\n", get_time(), id);
 	pthread_mutex_unlock(&data->print);
 	return (1);
 }
@@ -129,50 +128,10 @@ long long	last_meal(int id, int read_only, t_philo *data, int av)
 		{
 			if (get_time() - (time[i].tv_sec * 1000 + time[i].tv_usec / 1000)
 				>= data->die)
-				return (pthread_mutex_unlock(&data->last_meal), i++);
+				return (pthread_mutex_unlock(&data->last_meal), (i + 1));
 		}
 		result = 0;
 	}
 	pthread_mutex_unlock(&data->last_meal);
 	return (result);
 }
-
-/*
-This function is like a bonus but, it print more information about the state
-of each philosophers. It can help for degugging cause' it's say when
-they let go forks, and when does he take his second one. it goes with
-the comment in "philo.c" like this one.
-*/
-/***************************************************************************
-void	ft_printf(t_philo *data, int i, int id)
-{
-	static int	state = 0;
-
-	if (is_dead(0, 1, data) != 0)
-		state = 1;
-	if (state == 1 && id > -1 && i != 4)
-		return ;
-	pthread_mutex_lock(&data->print);
-	if (i == 1)
-		printf("%lld \033[1;34m%d\033[00m has taken a fork 🍴\n", get_time(),
-			id);
-	else if (i == 2)
-		printf("%lld \033[1;34m%d\033[00m is sleeping 😴\n", get_time(), id);
-	else if (i == 3)
-		printf("%lld \033[1;34m%d\033[00m is thinking 🤔\n", get_time(), id);
-	else if (i == 4)
-		printf("%lld \033[1;34m%d\033[00m died 💀\n", get_time(), is_dead(0,
-				1, data));
-	else if (i == 5)
-		printf("%lld \033[1;34mEveryone\033[00m has eaten enough 🍽️\n",
-			get_time());
-	else if (i == 6)
-		printf("%lld \033[1;34m%d\033[00m has taken another fork 🍴\n",
-			get_time(), id);
-	else if (i == 7)
-		printf("%lld \033[1;34m%d\033[00m is eating 🍝\n", get_time(), id);
-	else if (i == 8)
-		printf("%lld \033[1;34m%d\033[00m has finished eating 🍽️\n",
-			get_time(), id);
-	pthread_mutex_unlock(&data->print);
-}***************************************************************************/

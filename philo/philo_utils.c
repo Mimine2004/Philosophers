@@ -6,7 +6,7 @@
 /*   By: hhecquet <hhecquet@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 14:31:05 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/14 11:42:03 by hhecquet         ###   ########.fr       */
+/*   Updated: 2025/03/17 09:05:14 by hhecquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	*big_bro_is_watching(void *arg)
 				NULL);
 		i = last_meal(0, 1, data, 1);
 		if (i != 0)
-			return (end(0, 1, data), ft_printf(data, 6, i + 1), NULL);
+			return (end(0, 1, data), ft_printf(data, 6, i), NULL);
 		usleep(10);
 	}
 }
